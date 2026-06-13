@@ -1,0 +1,69 @@
+datasource db {
+  provider = "sqlite"
+  
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Session {
+  id               String            @id @default(uuid())
+  roomName         String            @unique
+  status           String            @default("CREATED")
+  agentIdentity    String
+  customerIdentity String?
+  createdAt        DateTime          @default(now())
+  startedAt        DateTime?
+  endedAt          DateTime?
+  durationSeconds  Int?
+
+  participants     ParticipantLog[]
+  chatMessages     ChatMessage[]
+  recordings       Recording[]
+  eventLogs        SessionEventLog[]
+}
+
+model ParticipantLog {
+  id         String    @id @default(uuid())
+  sessionId  String
+  session    Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  identity   String
+  role       String    
+  joinedAt   DateTime  @default(now())
+  leftAt     DateTime?
+}
+
+model ChatMessage {
+  id         String   @id @default(uuid())
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sender     String
+  role       String   
+  message    String
+  fileUrl    String?  
+  fileName   String?
+  createdAt  DateTime @default(now())
+}
+
+model Recording {
+  id          String    @id @default(uuid())
+  sessionId   String
+  session     Session   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  egressId    String    @unique
+  status      String    @default("STARTING") 
+  filePath    String?
+  fileSize    Int?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+}
+
+model SessionEventLog {
+  id         String   @id @default(uuid())
+  sessionId  String
+  session    Session  @relation(fields: [sessionId], references: [id])
+  eventType  String
+  actor      String
+  details    String?
+  timestamp  DateTime @default(now())
+}
