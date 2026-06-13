@@ -1,77 +1,151 @@
-Sovereign Real-Time Video Support Platform
-A fully self-hosted, sovereign real-time video support platform with zero external API dependencies. Built with Next.js 15 (App Router), Prisma v7, SQLite, and a local LiveKit WebRTC SFU server running inside Docker.
+# 🚀 Sovereign Real-Time Video Support Platform
 
-Tech Stack & Architecture
-Framework: Next.js 15 (Client-side use of React.use() to safely unwrap dynamic route parameters asynchronously)
-
-Database ORM: Prisma v7 with prisma.config.ts loading connection parameters and a native @prisma/adapter-better-sqlite3 adapter
-
-WebRTC SFU: LiveKit Server (Pion-based) running in Docker, allowing server-routed media calls with complete network transport stability
-
-File System: Standard offline file uploads and shared documents saved securely under local /public/uploads/ directory
-
-Local Setup & Quickstart
-Clone the repository:bash
-git clone <YOUR_REPOS_URL>
-cd videocallplatform
-
-
-Configure environment variables (.env):
-Create a .env file in the root directory:
-
-Code snippet
-DATABASE_URL="file:./dev.db"
-LIVEKIT_API_KEY="devkey"
-LIVEKIT_API_SECRET="secret"
-LIVEKIT_URL="http://localhost:7880"
-NEXT_PUBLIC_LIVEKIT_URL="ws://localhost:7880"
-Install dependencies:
-
-Bash
-npm install
-Prepare database tables:
-
-Bash
-npx prisma migrate dev --name init_sovereign_tables
-Spin up local sovereign WebRTC containers (Docker):
-Ensure Docker is running on your machine, then run:
-
-Bash
-docker compose up -d
-Start local development server:
-
-Bash
-npm run dev
-Test End-to-End Rooms:
-
-Agent Window: http://localhost:3000/call/test_room?role=AGENT&identity=Dave
-
-Customer Window: http://localhost:3000/call/test_room?role=CUSTOMER&identity=John
-
+A fully self-hosted, sovereign real-time video support platform with **zero external API dependencies**. Built using **Next.js 15 (App Router)**, **Prisma v7**, **SQLite**, and a locally hosted **LiveKit WebRTC SFU** running inside Docker.
 
 ---
 
-### Step 3: Initialize Git and Push to GitHub (VS Code Terminal)
+## 🏗️ Tech Stack & Architecture
 
-1. Go to **[GitHub.com](https://github.com/)**, click **New Repository**, name it (e.g., `sovereign-webrtc-platform`), set it to **Public**, and click **Create Repository**.
-2. Copy the repository URL (e.g., `https://github.com/your-username/sovereign-webrtc-platform.git`).
-3. Run these commands sequentially in your VS Code terminal [1]:
+### ⚡ Frontend
+
+* Next.js 15 (App Router)
+* React 19
+* Client-side use of `React.use()` for safely unwrapping dynamic route parameters asynchronously
+
+### 🗄️ Database
+
+* Prisma ORM v7
+* SQLite
+* `prisma.config.ts` for configuration management
+* Native `@prisma/adapter-better-sqlite3` adapter
+
+### 🎥 Real-Time Communication
+
+* LiveKit Server (Pion-based SFU)
+* Dockerized deployment
+* Server-routed WebRTC media streams
+* Reliable NAT traversal and transport stability
+
+### 📁 File Management
+
+* Secure local file uploads
+* Shared document support
+* Offline-first storage under:
+
+```text
+/public/uploads/
+```
+
+---
+
+## ⚙️ Environment Configuration
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="file:./dev.db"
+
+LIVEKIT_API_KEY="devkey"
+LIVEKIT_API_SECRET="secret"
+
+LIVEKIT_URL="http://localhost:7880"
+NEXT_PUBLIC_LIVEKIT_URL="ws://localhost:7880"
+```
+
+---
+
+## 🚀 Local Development Setup
+
+### 1️⃣ Install Dependencies
 
 ```bash
-# Initialize local git repository
+npm install
+```
+
+### 2️⃣ Prepare Database
+
+```bash
+npx prisma migrate dev --name init_sovereign_tables
+```
+
+### 3️⃣ Start LiveKit Infrastructure
+
+Ensure Docker is running, then launch the local WebRTC stack:
+
+```bash
+docker compose up -d
+```
+
+### 4️⃣ Start Development Server
+
+```bash
+npm run dev
+```
+
+---
+
+## 🧪 End-to-End Testing
+
+### 👨‍💼 Agent Session
+
+```text
+http://localhost:3000/call/test_room?role=AGENT&identity=Dave
+```
+
+### 👤 Customer Session
+
+```text
+http://localhost:3000/call/test_room?role=CUSTOMER&identity=John
+```
+
+Open both URLs in separate browser windows to test real-time audio/video communication.
+
+---
+
+## 📦 GitHub Repository Setup
+
+### 1️⃣ Create a GitHub Repository
+
+* Visit GitHub
+* Click **New Repository**
+* Choose a repository name (e.g., `sovereign-webrtc-platform`)
+* Set visibility to **Public**
+* Click **Create Repository**
+
+### 2️⃣ Push the Project
+
+Replace `<YOUR_GITHUB_REPOSITORY_URL>` with your repository URL:
+
+```bash
+# Initialize Git
 git init
 
-# Add all files to staging index (respecting your.gitignore rules)
-git add.
+# Stage all files
+git add .
 
-# Create the initial commit
-git commit -m "feat: Completed Sovereign WebRTC Support Platform Grand Finale MVP"
+# Create initial commit
+git commit -m "feat: Completed Sovereign WebRTC Support Platform MVP"
 
-# Set the default branch to main
+# Set main branch
 git branch -M main
 
-# Link your local folder to your remote GitHub repository
-git remote add origin <PASTE_YOUR_COPIED_GITHUB_REPO_URL_HERE>
+# Add remote repository
+git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
 
-# Push the codebase up
+# Push code
 git push -u origin main
+```
+
+---
+
+## 🔒 Key Features
+
+* ✅ 100% Self-Hosted Architecture
+* ✅ Zero External API Dependencies
+* ✅ Sovereign Data Ownership
+* ✅ Real-Time WebRTC Communication
+* ✅ Dockerized Infrastructure
+* ✅ Local File Sharing
+* ✅ SQLite + Prisma Persistence
+* ✅ Agent & Customer Support Rooms
+* ✅ Offline-Friendly Deployment Model
