@@ -10,7 +10,7 @@ import {
   VideoTrack,
   // AudioTrack,
 } from "@livekit/components-react";
-import { Track } from "livekit-client";
+import { Track, RoomEvent } from "livekit-client";
 
 interface Props {
   role: "AGENT" | "CUSTOMER";
@@ -48,18 +48,39 @@ export default function SupportRoomInterface({ role, roomName }: Props) {
 useEffect(() => {
   const enableMedia = async () => {
     try {
-      // wait until room is fully connected
-      if (room.state !== "connected") {
-        await new Promise((resolve) => {
-          // room.once("connected", resolve);
-          room.once("connected", () => resolve(undefined));
-        });
-      }
+      // Wait for both room connection AND participant media ready
+      const waitForConnection = new Promise<void>((resolve) => {
+        if (room.state === "connected") {
+          // If already connected, add extra delay for RTC engine
+          setTimeout(resolve, 500);
+        } else {
+          // Wait for connection event, then wait for RTC engine
+          const handleConnected = () => {
+            room.off(RoomEvent.Connected, handleConnected);
+            setTimeout(resolve, 500);
+          };
+          room.on(RoomEvent.Connected, handleConnected);
+        }
+      });
 
-      await room.localParticipant.setCameraEnabled(true);
-      await room.localParticipant.setMicrophoneEnabled(true);
+      await waitForConnection;
+
+      // Publish tracks with retry logic
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          await room.localParticipant.setCameraEnabled(true);
+          await room.localParticipant.setMicrophoneEnabled(true);
+          break; // Success, exit retry loop
+        } catch (err) {
+          retries--;
+          if (retries === 0) throw err;
+          console.warn(`Retry ${4 - retries}/3 - Media enable failed, retrying...`, err);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Failed to enable media:", err);
     }
   };
 
@@ -182,6 +203,8 @@ const tracks = useTracks(
 
 
 
+  
+
 
 
   const renderMessage = (msg: ReturnType<typeof useChat>["chatMessages"][number], idx: number) => {
@@ -235,6 +258,7 @@ const tracks = useTracks(
 
 
 
+  
 
 
 
@@ -339,7 +363,7 @@ const tracks = useTracks(
           >
             {micMuted ? (
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707l-4.707-4.707H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
               </svg>
             ) : (
@@ -432,7 +456,7 @@ const tracks = useTracks(
                 }
               }}
               placeholder="Send a message…"
-              className="flex-1 resize-none bg-slate-800/60 border border-white/8 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
+              className="flex-1 resize-none bg-slate-800/60 border border-white/8 rounded-xl px-3 py-2 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50"
             />
             <button
               onClick={sendMessage}
@@ -457,7 +481,7 @@ const tracks = useTracks(
             <button
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="w-full flex items-center justify-center gap-2 py-1.5 rounded-xl border border-white/8 bg-slate-800/40 hover:bg-slate-700/60 text-slate-400 hover:text-slate-200 text-[11px] transition-all disabled:opacity-40"
+              className="w-full flex items-center justify-center gap-2 py-1.5 rounded-xl border border-white/8 bg-slate-800/40 hover:bg-slate-700/60 text-slate-400 hover:text-slate-200 text-[11px] font-medium transition-colors disabled:opacity-40"
               title="Share a file"
             >
               {uploading ? (
