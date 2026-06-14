@@ -80,6 +80,8 @@ export default function CallPage() {
   token={token}
   serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
   connect={true}
+  audio={true}
+video={true}
   options={{
     adaptiveStream: true,
     dynacast: true,

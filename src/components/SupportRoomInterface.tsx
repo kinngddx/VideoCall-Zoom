@@ -6,8 +6,9 @@ import {
   useTracks,
   useChat,
   useLocalParticipant,
-  useRoomContext,
+  // useRoomContext,
   VideoTrack,
+  useRoomContext,
   // AudioTrack,
 } from "@livekit/components-react";
 import { Track, RoomEvent } from "livekit-client";
@@ -26,78 +27,16 @@ interface Props {
 // }
 
 export default function SupportRoomInterface({ role, roomName }: Props) {
-  const room = useRoomContext();
-
-// useEffect(() => {
-//   const enableMedia = async () => {
-//     if (room.state !== "connected") return;
-
-//     try {
-//       await room.localParticipant.setCameraEnabled(true);
-//       await room.localParticipant.setMicrophoneEnabled(true);
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
-
-//   enableMedia();
-// }, [room]);
 
 
 
-useEffect(() => {
-  const enableMedia = async () => {
-    try {
-      // Wait for both room connection AND participant media ready
-      const waitForConnection = new Promise<void>((resolve) => {
-        if (room.state === "connected") {
-          // If already connected, add longer delay for RTC engine
-          setTimeout(resolve, 1000); // Increased delay for RTC engine initialization
-        } else {
-          // Wait for connection event, then wait for RTC engine
-          const handleConnected = () => {
-            room.off(RoomEvent.Connected, handleConnected);
-            setTimeout(resolve, 1000); // Increased delay for RTC engine initialization
-          };
-          room.on(RoomEvent.Connected, handleConnected);
-        }
-      });
 
-      await waitForConnection;
-
-      // Publish tracks with MORE aggressive retry logic
-      let retries = 5;
-      let lastError: Error | unknown = null;
-
-      while (retries > 0) {
-        try {
-          await room.localParticipant.setCameraEnabled(true);
-          await new Promise(resolve => setTimeout(resolve, 200)); // Small delay between operations
-          await room.localParticipant.setMicrophoneEnabled(true);
-          console.log("✅ Media enabled successfully");
-          break; // Success, exit retry loop
-        } catch (err) {
-          lastError = err;
-          retries--;
-          if (retries === 0) throw err;
-          const waitTime = 800 + (Math.random() * 400); // Randomized backoff 800-1200ms
-          console.warn(`Retry ${6 - retries}/5 - Media enable failed, retrying in ${waitTime}ms...`, err);
-          await new Promise(resolve => setTimeout(resolve, waitTime));
-        }
-      }
-    } catch (err) {
-      console.error("❌ Failed to enable media after all retries:", err);
-    }
-  };
-
-  enableMedia();
-}, [room]);
 
 
 
 
   const router = useRouter();
-  // const room = useRoomContext();
+  const room = useRoomContext();
   const { localParticipant } = useLocalParticipant();
   const { chatMessages, send } = useChat();
 
@@ -131,15 +70,31 @@ const tracks = useTracks(
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
-  const toggleMic = useCallback(async () => {
-    await localParticipant.setMicrophoneEnabled(micMuted);
-    setMicMuted((m) => !m);
-  }, [localParticipant, micMuted]);
+  // const toggleMic = useCallback(async () => {
+  //   await localParticipant.setMicrophoneEnabled(micMuted);
+  //   setMicMuted((m) => !m);
+  // }, [localParticipant, micMuted]);
 
-  const toggleCam = useCallback(async () => {
-    await localParticipant.setCameraEnabled(camOff);
-    setCamOff((c) => !c);
-  }, [localParticipant, camOff]);
+  // const toggleCam = useCallback(async () => {
+  //   await localParticipant.setCameraEnabled(camOff);
+  //   setCamOff((c) => !c);
+  // }, [localParticipant, camOff]);
+
+
+  const toggleMic = useCallback(async () => {
+  const next = !micMuted;
+  await localParticipant.setMicrophoneEnabled(!next);
+  setMicMuted(next);
+}, [localParticipant, micMuted]);
+
+const toggleCam = useCallback(async () => {
+  const next = !camOff;
+  await localParticipant.setCameraEnabled(!next);
+  setCamOff(next);
+}, [localParticipant, camOff]);
+
+
+
 
   const toggleRecording = useCallback(async () => {
     setRecordingLoading(true);
@@ -156,6 +111,8 @@ const tracks = useTracks(
     }
   }, [recording, roomName]);
 
+
+  //end call
   const endCall = useCallback(async () => {
     await fetch("/api/session/end", {
       method: "POST",
