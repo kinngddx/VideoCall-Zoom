@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Sovereign Real-Time Video Support Platform
 
-## Getting Started
+A fully self-hosted, sovereign real-time video support platform with **zero external API dependencies**. Built using **Next.js 15 (App Router)**, **Prisma v7**, **SQLite**, and a locally hosted **LiveKit WebRTC SFU** running inside Docker.
 
-First, run the development server:
+---
+
+## 🏗️ Tech Stack & Architecture
+
+### ⚡ Frontend
+
+* Next.js 15 (App Router)
+* React 19
+* Client-side use of `React.use()` for safely unwrapping dynamic route parameters asynchronously
+
+### 🗄️ Database
+
+* Prisma ORM v7
+* SQLite
+* `prisma.config.ts` for configuration management
+* Native `@prisma/adapter-better-sqlite3` adapter
+
+### 🎥 Real-Time Communication
+
+* LiveKit Server (Pion-based SFU)
+* Dockerized deployment
+* Server-routed WebRTC media streams
+* Reliable NAT traversal and transport stability
+
+### 📁 File Management
+
+* Secure local file uploads
+* Shared document support
+* Offline-first storage under:
+
+```text
+/public/uploads/
+```
+
+---
+
+## ⚙️ Environment Configuration
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL="file:./dev.db"
+
+LIVEKIT_API_KEY="devkey"
+LIVEKIT_API_SECRET="secret"
+
+LIVEKIT_URL="http://localhost:7880"
+NEXT_PUBLIC_LIVEKIT_URL="ws://localhost:7880"
+```
+
+---
+
+## 🚀 Local Development Setup
+
+### 1️⃣ Install Dependencies
+
+```bash
+npm install
+```
+
+### 2️⃣ Prepare Database
+
+```bash
+npx prisma migrate dev --name init_sovereign_tables
+```
+
+### 3️⃣ Start LiveKit Infrastructure
+
+Ensure Docker is running, then launch the local WebRTC stack:
+
+```bash
+docker compose up -d
+```
+
+### 4️⃣ Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧪 End-to-End Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 👨‍💼 Agent Session
 
-## Learn More
+```text
+http://localhost:3000/call/test_room?role=AGENT&identity=Dave
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 👤 Customer Session
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+http://localhost:3000/call/test_room?role=CUSTOMER&identity=John
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open both URLs in separate browser windows to test real-time audio/video communication.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 GitHub Repository Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 1️⃣ Create a GitHub Repository
+
+* Visit GitHub
+* Click **New Repository**
+* Choose a repository name (e.g., `sovereign-webrtc-platform`)
+* Set visibility to **Public**
+* Click **Create Repository**
+
+### 2️⃣ Push the Project
+
+Replace `<YOUR_GITHUB_REPOSITORY_URL>` with your repository URL:
+
+```bash
+# Initialize Git
+git init
+
+# Stage all files
+git add .
+
+# Create initial commit
+git commit -m "feat: Completed Sovereign WebRTC Support Platform MVP"
+
+# Set main branch
+git branch -M main
+
+# Add remote repository
+git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
+
+# Push code
+git push -u origin main
+```
+
+---
+
+## 🔒 Key Features
+
+* ✅ 100% Self-Hosted Architecture
+* ✅ Zero External API Dependencies
+* ✅ Sovereign Data Ownership
+* ✅ Real-Time WebRTC Communication
+* ✅ Dockerized Infrastructure
+* ✅ Local File Sharing
+* ✅ SQLite + Prisma Persistence
+* ✅ Agent & Customer Support Rooms
+* ✅ Offline-Friendly Deployment Model
