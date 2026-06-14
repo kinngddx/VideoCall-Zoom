@@ -111,6 +111,23 @@ export async function POST(req: NextRequest) {
     break;
 }
 
+//for n8n
+await fetch("http://localhost:5678/webhook/call-ended", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    roomName: event.room?.name,
+    event: event.event,
+    timestamp: Date.now(),
+  }),
+}).catch(console.error);
+
+
+
+
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(error);
