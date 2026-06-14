@@ -51,13 +51,13 @@ useEffect(() => {
       // Wait for both room connection AND participant media ready
       const waitForConnection = new Promise<void>((resolve) => {
         if (room.state === "connected") {
-          // If already connected, add extra delay for RTC engine
-          setTimeout(resolve, 500);
+          // If already connected, add longer delay for RTC engine
+          setTimeout(resolve, 1000); // Increased delay for RTC engine initialization
         } else {
           // Wait for connection event, then wait for RTC engine
           const handleConnected = () => {
             room.off(RoomEvent.Connected, handleConnected);
-            setTimeout(resolve, 500);
+            setTimeout(resolve, 1000); // Increased delay for RTC engine initialization
           };
           room.on(RoomEvent.Connected, handleConnected);
         }
@@ -65,22 +65,28 @@ useEffect(() => {
 
       await waitForConnection;
 
-      // Publish tracks with retry logic
-      let retries = 3;
+      // Publish tracks with MORE aggressive retry logic
+      let retries = 5;
+      let lastError: Error | unknown = null;
+
       while (retries > 0) {
         try {
           await room.localParticipant.setCameraEnabled(true);
+          await new Promise(resolve => setTimeout(resolve, 200)); // Small delay between operations
           await room.localParticipant.setMicrophoneEnabled(true);
+          console.log("✅ Media enabled successfully");
           break; // Success, exit retry loop
         } catch (err) {
+          lastError = err;
           retries--;
           if (retries === 0) throw err;
-          console.warn(`Retry ${4 - retries}/3 - Media enable failed, retrying...`, err);
-          await new Promise(resolve => setTimeout(resolve, 500));
+          const waitTime = 800 + (Math.random() * 400); // Randomized backoff 800-1200ms
+          console.warn(`Retry ${6 - retries}/5 - Media enable failed, retrying in ${waitTime}ms...`, err);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
         }
       }
     } catch (err) {
-      console.error("Failed to enable media:", err);
+      console.error("❌ Failed to enable media after all retries:", err);
     }
   };
 
