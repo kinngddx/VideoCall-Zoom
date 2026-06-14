@@ -73,7 +73,7 @@ export default function CallPage() {
         <strong className="ml-1 text-white">{roomName}</strong>...
       </div>
     );
-  }
+  } 
 
   return (
    <LiveKitRoom
@@ -90,4 +90,27 @@ export default function CallPage() {
   <SupportRoomInterface role={role} roomName={roomName} />
 </LiveKitRoom>
   );
+
+
+
+
+
+// return (
+//   token ? (
+//     <LiveKitRoom
+//       token={token}
+//       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
+//       connect={!!token}
+//       options={{
+//         adaptiveStream: true,
+//         dynacast: true,
+//       }}
+//       style={{ height: "100dvh" }}
+//     >
+//       <RoomAudioRenderer />
+//       <SupportRoomInterface role={role} roomName={roomName} />
+//     </LiveKitRoom>
+//   ) : null
+// );
+
 }

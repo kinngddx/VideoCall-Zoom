@@ -28,7 +28,8 @@ rtc:
   tcp_port: 7881
   port_range_start: 7882
   port_range_end: 7883
-  use_external_ip: false
+  # use_external_ip: false
+  use_external_ip: true
 
 keys:
   devkey: secret

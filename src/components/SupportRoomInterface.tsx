@@ -28,11 +28,34 @@ interface Props {
 export default function SupportRoomInterface({ role, roomName }: Props) {
   const room = useRoomContext();
 
+// useEffect(() => {
+//   const enableMedia = async () => {
+//     if (room.state !== "connected") return;
+
+//     try {
+//       await room.localParticipant.setCameraEnabled(true);
+//       await room.localParticipant.setMicrophoneEnabled(true);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+
+//   enableMedia();
+// }, [room]);
+
+
+
 useEffect(() => {
   const enableMedia = async () => {
-    if (room.state !== "connected") return;
-
     try {
+      // wait until room is fully connected
+      if (room.state !== "connected") {
+        await new Promise((resolve) => {
+          // room.once("connected", resolve);
+          room.once("connected", () => resolve(undefined));
+        });
+      }
+
       await room.localParticipant.setCameraEnabled(true);
       await room.localParticipant.setMicrophoneEnabled(true);
     } catch (err) {
@@ -42,6 +65,10 @@ useEffect(() => {
 
   enableMedia();
 }, [room]);
+
+
+
+
   const router = useRouter();
   // const room = useRoomContext();
   const { localParticipant } = useLocalParticipant();
@@ -115,9 +142,22 @@ const tracks = useTracks(
   const sendMessage = useCallback(async () => {
     const trimmed = chatInput.trim();
     if (!trimmed) return;
+    if(!send) return
+
     await send(trimmed);
     setChatInput("");
   }, [chatInput, send]);
+
+//   const onSend = useCallback(async () => {
+//   const trimmed = chatInput.trim();
+//   if (!trimmed) return;
+//   if (!send) return;
+
+//   await send(trimmed);
+//   setChatInput("");
+// }, [chatInput, send]);
+
+
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
